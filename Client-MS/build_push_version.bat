@@ -7,19 +7,19 @@ if not defined SERVICE_VERSION (
 )
 
 echo Building Docker image...
-docker build -f Dockerfile -t client-service:%SERVICE_VERSION% .
+docker build -f Dockerfile -t client-kcl:%SERVICE_VERSION% .
 
 echo Getting the new image ID...
 setlocal enabledelayedexpansion
-for /f "tokens=*" %%i in ('docker images -q command-service:%SERVICE_VERSION%') do set IMAGE_ID=%%i
+for /f "tokens=*" %%i in ('docker images -q client-kcl:%SERVICE_VERSION%') do set IMAGE_ID=%%i
 echo New image ID: !IMAGE_ID!
 endlocal
 
 echo Tagging the image...
-docker tag client-service:%SERVICE_VERSION%  ion21/client-service:%SERVICE_VERSION%
+docker tag client-kcl:%SERVICE_VERSION%  ion21/client-kcl:%SERVICE_VERSION%
 
 echo Pushing the tagged image...
-docker push  ion21/client-service:%SERVICE_VERSION%
+docker push  ion21/client-kcl:%SERVICE_VERSION%
 
 echo Script completed.
 pause

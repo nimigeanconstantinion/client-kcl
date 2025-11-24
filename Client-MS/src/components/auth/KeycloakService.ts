@@ -244,7 +244,7 @@ export interface AuthState {
 
 export class KeycloakService {
     keycloak = new Keycloak({
-        url: "http://localhost:8081/",
+        url: `${import.meta.env.VITE_KEYCLOAK_URL}`,
         realm: "rsk",
         clientId: "react-client",
     });

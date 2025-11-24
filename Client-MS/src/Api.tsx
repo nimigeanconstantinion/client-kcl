@@ -1,11 +1,11 @@
-import MapStocOtim from "./models/MapStocOtim";
-import HttpResponse from "./models/HttpResponse";
-import User from "./models/User";
+
 // import {getEnvVariables} from "./utility/envUtils";
 // asta era  import {globalConfig, loadConfig} from './config/configLoader';
 // let env = getEnvVariables();
 // import {AppConfig} from "./models/AppConfig";
 // import {loadConfig} from "./utile/utile";
+
+import type HttpResponse from "./components/auth/HttpResponse.ts";
 
 export default class Api{
 
@@ -21,8 +21,8 @@ export default class Api{
         //     basepath = "http://localhost:5000"; // fallback if config fails
         // }
         // // basepath="http://react-app.local";
-       let basepath="http://localhost:5000/api/v1/edge"
-       const url= basepath+"/server"+path;
+       const basepath=`${import.meta.env.VITE_API_URL}/api/v1/edge`
+       const url= basepath+path;
 
 
        // const url= "http://nserver:8083/api/v1/server"+path;
@@ -78,92 +78,112 @@ export default class Api{
 
     }
 
-    queryGetAllMapStoc = async (tokenString:string): Promise<MapStocOtim[]> => {
+    testToken=async (tokenString:string): Promise<string> => {
+        try {
+            const response = await this.api("", "GET", null, tokenString);
 
-        let data = await this.api("/qallmap", "GET", null,tokenString);
-        if(data.status===200){
-            return await data.json();
-        }else {
-            return Promise.reject([]);
+            if (response.status === 200) {
+                // Preia textul sau JSON-ul din răspuns
+                const data:string = await response.json() as string; // sau response.json(), depinde de backend
+                console.log(data)
+                return data; // rezolvă Promise<string>
+            }
+
+            // Dacă backend-ul a răspuns cu alt status decat 200
+                return Promise.reject("raspunsul nu e 200")
+        } catch (e) {
+            // Returnează eroarea ca respingere de Promise<string>
+                return Promise.reject("Nu am primit ce trebuie: " + e);
         }
+    }
+        // }
+        //
+        // queryGetAllMapStoc = async (tokenString:string): Promise<MapStocOtim[]> => {
+        //
+        //     let data = await this.api("/qallmap", "GET", null,tokenString);
+        //     if(data.status===200){
+        //         return await data.json();
+        //     }else {
+        //         return Promise.reject([]);
+        //     }
+        //
+        // }
+        //
+        // comGetAllMapStoc = async (tokenString:string): Promise<MapStocOtim[]> => {
+        //
+        //     let data = await this.api("/comallmap", "GET", null,tokenString);
+        //     if(data.status===200){
+        //         return await data.json();
+        //     }else {
+        //         return Promise.reject([]);
+        //     }
+        //
+        // }
+        //
+        //
+        // bulkAddMapStoc = async (newProd:MapStocOtim[],tokenString:string): Promise<boolean> => {
+        //
+        //     let data = await this.api("/addbulk", "POST", newProd,tokenString);
+        //     if(data.status===200){
+        //         return data.json();
+        //     }else {
+        //         return Promise.reject([]);
+        //     }
+        //
+        // }
+        //
+        // updMapStoc = async (newProd:MapStocOtim,tokenString:string): Promise<boolean> => {
+        //
+        //     let data = await this.api("/upd", "POST", newProd,tokenString);
+        //     if(data.status===200){
+        //         return data.json();
+        //     }else {
+        //         return Promise.reject([]);
+        //     }
+        //
+        // }
+        //
+        //
+        // delMapStoc = async (delProd:string,tokenString:string): Promise<boolean> => {
+        //
+        //     let data = await this.api("/del/"+delProd, "DELETE", null,tokenString);
+        //     if(data.status===200){
+        //         console.log("am primit status ok pentru "+delProd);
+        //         return data.json();
+        //     }else {
+        //         return Promise.reject([]);
+        //     }
+        //
+        // }
+        //
+        // login=async (user:User):Promise<User>=>{
+        //     // let x=loadConfig()
+        //     console.log("La LOGIN cu ");
+        //         // console.log(globalConfig!.apiUrl);
+        //     let response:HttpResponse<string>=await this.api("/login","POST", user,null);
+        //     // let response:HttpResponse<string>=await this.api("http://localhost:8080/api/v1/server/login","POST", user,null);
+        //
+        //     if(response.status===200){
+        //
+        //          return response.json();
+        //     }else{
+        //
+        //          return Promise.reject("Eroare de logare")
+        //     }
+        //
+        // }
+        //
+        // register=async (user:User):Promise<string>=>{
+        //     let response:HttpResponse<string>=await this.api<string,User>("/register","POST", user,null);
+        //
+        //     if(response.status===200){
+        //
+        //         return response.text();
+        //     }else{
+        //
+        //         return Promise.reject("Register Error!!")
+        //     }
+        //
+        // }
 
     }
-
-    comGetAllMapStoc = async (tokenString:string): Promise<MapStocOtim[]> => {
-
-        let data = await this.api("/comallmap", "GET", null,tokenString);
-        if(data.status===200){
-            return await data.json();
-        }else {
-            return Promise.reject([]);
-        }
-
-    }
-
-
-    bulkAddMapStoc = async (newProd:MapStocOtim[],tokenString:string): Promise<boolean> => {
-
-        let data = await this.api("/addbulk", "POST", newProd,tokenString);
-        if(data.status===200){
-            return data.json();
-        }else {
-            return Promise.reject([]);
-        }
-
-    }
-
-    updMapStoc = async (newProd:MapStocOtim,tokenString:string): Promise<boolean> => {
-
-        let data = await this.api("/upd", "POST", newProd,tokenString);
-        if(data.status===200){
-            return data.json();
-        }else {
-            return Promise.reject([]);
-        }
-
-    }
-
-
-    delMapStoc = async (delProd:string,tokenString:string): Promise<boolean> => {
-
-        let data = await this.api("/del/"+delProd, "DELETE", null,tokenString);
-        if(data.status===200){
-            console.log("am primit status ok pentru "+delProd);
-            return data.json();
-        }else {
-            return Promise.reject([]);
-        }
-
-    }
-
-    login=async (user:User):Promise<User>=>{
-        // let x=loadConfig()
-        console.log("La LOGIN cu ");
-            // console.log(globalConfig!.apiUrl);
-        let response:HttpResponse<string>=await this.api("/login","POST", user,null);
-        // let response:HttpResponse<string>=await this.api("http://localhost:8080/api/v1/server/login","POST", user,null);
-
-        if(response.status===200){
-
-             return response.json();
-        }else{
-
-             return Promise.reject("Eroare de logare")
-        }
-
-    }
-
-    register=async (user:User):Promise<string>=>{
-        let response:HttpResponse<string>=await this.api<string,User>("/register","POST", user,null);
-
-        if(response.status===200){
-
-            return response.text();
-        }else{
-
-            return Promise.reject("Register Error!!")
-        }
-
-    }
-
-}

@@ -1,6 +1,7 @@
 // src/components/LoginForm.tsx
 import { useState } from "react";
 import { keycloakService } from "./KeycloakService";
+import Api from "../../Api.tsx";
 
 export default function LoginForm() {
     const [username, setUsername] = useState("");
@@ -48,7 +49,25 @@ export default function LoginForm() {
     };
 
 
-    return (
+    const verifyTokenSpring = async (): Promise<boolean> => {
+        const authState = localStorage.getItem("authState");
+        const token: string = authState ? (JSON.parse(authState)?.token ?? "") : "";
+
+        if (!token) return false;
+        try{
+            let api=new Api();
+            const result=await api.testToken(token);
+            console.log("Din API am primit ")
+            console.log(result);
+            return  true;
+
+        }catch (e){
+              console.log("Eroare la API!!!")
+              return Promise.reject("Eroare de autentificare "+e)
+        }
+    }
+
+        return (
         <form onSubmit={handleLogin}>
             {
                 valid?(
@@ -71,7 +90,7 @@ export default function LoginForm() {
                 Register
             </button>
 
-            <button type="button" onClick={verifyTokenOAuth2}>
+            <button type="button" onClick={verifyTokenSpring}>
                 Check TOKEN
             </button>
         </form>
